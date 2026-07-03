@@ -6,7 +6,7 @@
 
 本地部署的半自动敏感信息脱敏工具，专为法律文书场景设计。上传文档 → 自动检测敏感信息 → 人工审核确认 → 导出脱敏结果，全程数据不出本机。
 
-![screenshot](https://raw.githubusercontent.com/malcolmfeng/legal-mask/main/screenshot.png)
+![screenshot](screenshots/系统截图.png)
 
 ## 特性
 

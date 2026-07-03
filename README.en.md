@@ -52,6 +52,8 @@ Download `legal-mask.exe` from the [Releases](https://github.com/malcolmfeng/leg
 
 The repository includes a sample document `examples/测试文档-法律文书脱敏测试.docx` containing various types of sensitive information. Upload it directly to test the system's detection and redaction capabilities.
 
+![screenshot](screenshots/系统截图.png)
+
 ## Supported Document Formats
 
 | Format | Parser | Import | Export |
