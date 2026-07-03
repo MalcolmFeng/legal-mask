@@ -52,7 +52,7 @@ export async function exportDocument(docId: string): Promise<void> {
 }
 
 export async function exportComparison(docId: string): Promise<{ comparison: string }> {
-  return request(`/export/comparison/${docId}`, { method: 'POST' })
+  return request(`/export/comparison/${docId}`)
 }
 
 export async function getSettings(): Promise<{ enabled_types: string[]; mask_format: string }> {

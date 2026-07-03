@@ -11,7 +11,7 @@ router = APIRouter()
 config = Config.default()
 
 
-@router.post("/{doc_id}")
+@router.get("/{doc_id}")
 async def export_document(doc_id: str):
     from legal_mask.api.documents import _documents
 
@@ -44,7 +44,7 @@ async def export_document(doc_id: str):
     )
 
 
-@router.post("/text/{doc_id}")
+@router.get("/text/{doc_id}")
 async def export_text(doc_id: str):
     from legal_mask.api.documents import _documents
 
@@ -65,7 +65,7 @@ async def export_text(doc_id: str):
     return {"masked_text": text_result}
 
 
-@router.post("/comparison/{doc_id}")
+@router.get("/comparison/{doc_id}")
 async def export_comparison(doc_id: str):
     from legal_mask.api.documents import _documents
 

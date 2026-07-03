@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDocumentStore } from '../stores/document'
 import { SENSITIVE_TYPE_COLORS, SENSITIVE_TYPE_LABELS } from '../types'
@@ -13,9 +13,53 @@ const docId = route.params.id as string
 const comparing = ref(false)
 const comparison = ref('')
 
+const selMenu = ref(false)
+const selTop = ref(0)
+const selLeft = ref(0)
+const selText = ref('')
+const selStart = ref(0)
+const selEnd = ref(0)
+
 const pendingCount = computed(() => store.annotations.filter(a => a.status === 'pending').length)
 
 onMounted(async () => { await store.loadDocument(docId) })
+onUnmounted(() => { document.removeEventListener('mousedown', handleOutsideClick) })
+
+function handleTextMouseup(e: MouseEvent) {
+  const sel = window.getSelection()
+  if (!sel || sel.isCollapsed || !sel.toString().trim()) {
+    selMenu.value = false
+    return
+  }
+  const text = sel.toString().trim()
+  const content = store.currentDoc?.content || ''
+  let idx = content.indexOf(text)
+  if (idx === -1) {
+    idx = content.indexOf(text.replace(/\s+/g, ''))
+    if (idx === -1) { selMenu.value = false; return }
+  }
+  selText.value = text
+  selStart.value = idx
+  selEnd.value = idx + text.length
+  selTop.value = e.clientY + 6
+  selLeft.value = e.clientX
+  selMenu.value = true
+  setTimeout(() => document.addEventListener('mousedown', handleOutsideClick), 0)
+}
+
+function handleOutsideClick(e: MouseEvent) {
+  const target = e.target as HTMLElement
+  if (!target.closest('.sel-popup') && !target.closest('.text-content')) {
+    selMenu.value = false
+    document.removeEventListener('mousedown', handleOutsideClick)
+  }
+}
+
+async function markSelection(type: string) {
+  await store.addAnnotation(docId, selStart.value, selEnd.value, selText.value, type)
+  selMenu.value = false
+  document.removeEventListener('mousedown', handleOutsideClick)
+}
 
 function getColor(type: string): string { return SENSITIVE_TYPE_COLORS[type] || '#95A5A6' }
 function getLabel(type: string): string { return SENSITIVE_TYPE_LABELS[type] || type }
@@ -64,8 +108,8 @@ function renderHighlighted(text: string): string {
 
     <div class="review-body">
       <div class="original-pane">
-        <h4>原文</h4>
-        <div class="text-content" v-html="renderHighlighted(store.currentDoc.content || '')"></div>
+        <h4>原文 <span class="hint">（选中文字可手动标记为敏感内容）</span></h4>
+        <div class="text-content" v-html="renderHighlighted(store.currentDoc.content || '')" @mouseup="handleTextMouseup"></div>
       </div>
       <div class="right-pane">
         <div class="annotations-list" v-if="store.annotations.length">
@@ -92,6 +136,15 @@ function renderHighlighted(text: string): string {
           <button @click="handleCompare">{{ comparing ? '关闭预览' : '对比预览' }}</button>
           <button class="btn-export" @click="handleExport">导出</button>
         </div>
+      </div>
+    </div>
+
+    <div v-if="selMenu" class="sel-popup" :style="{ top: selTop + 'px', left: selLeft + 'px' }">
+      <div class="sel-label">标记为：</div>
+      <div class="sel-types">
+        <button v-for="(label, key) in SENSITIVE_TYPE_LABELS" :key="key"
+                class="sel-btn" :style="{ borderColor: getColor(key) }"
+                @click="markSelection(key)">{{ label }}</button>
       </div>
     </div>
   </div>
@@ -127,4 +180,12 @@ function renderHighlighted(text: string): string {
 .comparison-text { font-size: 13px; line-height: 1.6; white-space: pre-wrap; }
 .annotations-pane { background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 12px; flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 .annotations-pane h4 { margin-bottom: 8px; font-size: 14px; color: #666; flex-shrink: 0; }
+.hint { font-size: 12px; color: #999; font-weight: normal; }
+.text-content { flex: 1; overflow-y: auto; line-height: 1.8; font-size: 14px; white-space: pre-wrap; word-break: break-all; cursor: text; }
+.text-content::selection { background: #b3d4fc; }
+.sel-popup { position: fixed; z-index: 1000; background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 8px 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); max-width: 320px; }
+.sel-label { font-size: 11px; color: #999; margin-bottom: 6px; }
+.sel-types { display: flex; flex-wrap: wrap; gap: 4px; }
+.sel-btn { padding: 3px 8px; border: 1px solid; border-radius: 4px; background: white; cursor: pointer; font-size: 11px; white-space: nowrap; }
+.sel-btn:hover { background: #f5f5f5; }
 </style>
