@@ -23,3 +23,9 @@ dependencies = [
 ]
 [project.scripts]
 legal-mask = "legal_mask.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["legal_mask*"]
+
+[tool.setuptools.package-data]
+legal_mask = ["static/**/*"]
