@@ -1,5 +1,8 @@
 from pathlib import Path
+import pytest
 from legal_mask.document_parsers import get_parser
+from legal_mask.document_parsers.docx_parser import DocxParser
+from legal_mask.document_parsers.text_parser import TextParser
 
 
 def test_text_parser(tmp_path):
@@ -12,18 +15,11 @@ def test_text_parser(tmp_path):
 
 
 def test_get_parser_unsupported():
-    from pathlib import Path
-    from legal_mask.document_parsers import get_parser
-    import pytest
     with pytest.raises(ValueError, match="Unsupported file type"):
         get_parser(Path("test.xyz"))
 
 
 def test_get_parser_supported():
-    from pathlib import Path
-    from legal_mask.document_parsers import get_parser
-    from legal_mask.document_parsers.docx_parser import DocxParser
-    from legal_mask.document_parsers.text_parser import TextParser
     assert isinstance(get_parser(Path("test.docx")), DocxParser)
     assert isinstance(get_parser(Path("test.txt")), TextParser)
     assert isinstance(get_parser(Path("test.md")), TextParser)

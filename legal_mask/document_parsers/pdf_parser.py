@@ -13,7 +13,12 @@ class PdfParser(BaseParser):
         for page in doc:
             pages.append(page.get_text())
         doc.close()
-        content = "\n--- 第%d页 ---\n".join(pages) % tuple(range(1, len(pages) + 1))
+        parts = []
+        for i, page_text in enumerate(pages):
+            if i > 0:
+                parts.append(f"\n--- 第{i + 1}页 ---\n")
+            parts.append(page_text)
+        content = "".join(parts)
         return DocumentModel(
             id=str(uuid.uuid4()),
             filename=path.name,
