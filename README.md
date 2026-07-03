@@ -1,14 +1,22 @@
-# legal-mask · 法律文档脱敏系统
+# legal-mask · 法律文档脱敏系统 · Legal Document Redaction System
+
+<p align="center">
+  <a href="#readme-cn">🇨🇳 中文</a> · <a href="#readme-en">🇬🇧 English</a>
+</p>
+
+![screenshot](screenshots/系统截图.png)
+
+---
+
+<h2 id="readme-cn">🇨🇳 中文</h2>
+
+本地部署的半自动敏感信息脱敏工具，专为法律文书场景设计。上传文档 → 自动检测敏感信息 → 人工审核确认 → 导出脱敏结果，全程数据不出本机。
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![Vue.js](https://img.shields.io/badge/Vue.js-3.4%2B-4FC08D?logo=vuedotjs&logoColor=white)](https://vuejs.org)
 
-本地部署的半自动敏感信息脱敏工具，专为法律文书场景设计。上传文档 → 自动检测敏感信息 → 人工审核确认 → 导出脱敏结果，全程数据不出本机。
-
-![screenshot](screenshots/系统截图.png)
-
-## 特性
+### 特性
 
 - **自动检测** — 规则引擎 + 关键词匹配 + NER 模型三重检测
 - **广泛覆盖** — 姓名、身份证号、手机号、案号、法院名称、企业名称、统一社会信用代码、地址、邮箱、银行账户、审判法官 / 法官助理 / 书记员、自定义标记
@@ -18,9 +26,9 @@
 - **本地运行** — 无需联网，数据不离开本机
 - **单文件分发** — Windows 用户可直接运行打包好的 `.exe`
 
-## 快速开始
+### 快速开始
 
-### 方式一：pip 安装
+**方式一：pip 安装**
 
 ```bash
 pip install legal-mask
@@ -28,7 +36,7 @@ legal-mask start
 # 浏览器访问 http://127.0.0.1:8765
 ```
 
-### 方式二：源码运行
+**方式二：源码运行**
 
 ```bash
 git clone https://github.com/malcolmfeng/legal-mask.git
@@ -44,11 +52,11 @@ npm install
 npm run dev
 ```
 
-### 方式三：Windows 单文件版
+**方式三：Windows 单文件版**
 
 从 [Releases](https://github.com/malcolmfeng/legal-mask/releases) 下载 `legal-mask.exe`，双击运行即可自动打开浏览器。
 
-## 支持的文档格式
+### 支持的文档格式
 
 | 格式 | 解析引擎 | 导入 | 导出 |
 |------|---------|------|------|
@@ -57,7 +65,7 @@ npm run dev
 | XLSX | openpyxl | ✓ | ✓ |
 | TXT  | — | ✓ | ✓ |
 
-## 检测引擎
+### 检测引擎
 
 | 引擎 | 方式 | 覆盖类型 | 精确度 |
 |------|------|---------|--------|
@@ -65,7 +73,7 @@ npm run dev
 | 关键词匹配 | 法律关键词 + 职位识别 | 法官、法官助理、书记员、当事人、法院名称 | 中高（0.85–0.9） |
 | NER 模型 | Transformers / ONNX | 人名、机构名、地址 | 中（依赖模型质量） |
 
-## 使用流程
+### 使用流程
 
 1. **上传文档** — 支持拖拽或文件选择
 2. **自动检测** — 系统自动扫描敏感信息并标注
@@ -73,9 +81,9 @@ npm run dev
 4. **手动标注** — 可在文档中选中文本添加自定义标注
 5. **导出结果** — 导出脱敏后的 DOCX / TXT，或查看原文对比
 
-> 💡 仓库中提供了一个示例文档 `examples/测试文档-法律文书脱敏测试.docx`，包含常见敏感信息格式，可直接上传测试系统功能。
+> 仓库中提供了一个示例文档 `examples/测试文档-法律文书脱敏测试.docx`，包含常见敏感信息格式，可直接上传测试系统功能。
 
-## 项目结构
+### 项目结构
 
 ```
 legal-mask/
@@ -96,7 +104,7 @@ legal-mask/
 └── pyproject.toml
 ```
 
-## 配置
+### 配置
 
 配置文件位于 `~/.legal-mask/`，可通过 Web 界面的"设置"页面调整：
 
@@ -105,14 +113,14 @@ legal-mask/
 - 选择启用的敏感信息类型
 - 自定义替换规则
 
-## 构建 Windows 可执行文件
+### 构建 Windows 可执行文件
 
 ```bash
 python build.py
 # 输出：dist/legal-mask.exe
 ```
 
-## 开发
+### 开发
 
 ```bash
 # 安装开发依赖
@@ -128,7 +136,7 @@ cd legal_mask/frontend && npm run dev
 cd legal_mask/frontend && npm run build
 ```
 
-## Tech Stack
+### Tech Stack
 
 **Backend:** Python, FastAPI, Uvicorn, Click  
 **Frontend:** Vue.js 3, TypeScript, Vite, Pinia, Vue Router  
@@ -136,6 +144,146 @@ cd legal_mask/frontend && npm run build
 **ML Inference:** ONNX Runtime, Transformers  
 **Packaging:** PyInstaller  
 
-## License
+---
+
+<h2 id="readme-en">🇬🇧 English</h2>
+
+A locally-deployed, semi-automated sensitive information redaction tool designed for Chinese legal documents. Upload a document → auto-detect sensitive information → review and confirm → export the redacted result. All data stays on your machine.
+
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![Vue.js](https://img.shields.io/badge/Vue.js-3.4%2B-4FC08D?logo=vuedotjs&logoColor=white)](https://vuejs.org)
+
+### Features
+
+- **Multi-engine detection** — rule-based regex, keyword matching, and NER model
+- **Broad coverage** — personal names, ID numbers, phone numbers, case numbers, court names, company names, unified social credit codes, addresses, emails, bank accounts, judges/clerk info, custom tags
+- **Human review** — web interface to confirm, ignore, or modify each annotation
+- **Manual annotation** — select text directly in the document to mark sensitive info
+- **Format-preserving export** — DOCX retains original formatting; also supports TXT and side-by-side comparison
+- **100% local** — no internet required, data never leaves your machine
+- **Standalone binary** — Windows users can run the pre-built `.exe`
+
+### Quick Start
+
+**Option 1: pip install**
+
+```bash
+pip install legal-mask
+legal-mask start
+# Open http://127.0.0.1:8765 in your browser
+```
+
+**Option 2: Run from source**
+
+```bash
+git clone https://github.com/malcolmfeng/legal-mask.git
+cd legal-mask
+
+# Backend
+pip install -r requirements.txt
+python -m legal_mask start
+
+# Frontend (optional, for development with hot-reload)
+cd legal_mask/frontend
+npm install
+npm run dev
+```
+
+**Option 3: Windows standalone binary**
+
+Download `legal-mask.exe` from the [Releases](https://github.com/malcolmfeng/legal-mask/releases) page and double-click to run. The browser will open automatically.
+
+### Test Document
+
+The repository includes a sample document `examples/测试文档-法律文书脱敏测试.docx` containing various types of sensitive information. Upload it directly to test the system's detection and redaction capabilities.
+
+### Supported Document Formats
+
+| Format | Parser | Import | Export |
+|--------|--------|--------|--------|
+| DOCX   | python-docx | ✓ | ✓ (format-preserving) |
+| PDF    | PyMuPDF | ✓ | ✓ |
+| XLSX   | openpyxl | ✓ | ✓ |
+| TXT    | — | ✓ | ✓ |
+
+### Detection Engines
+
+| Engine | Method | Covered Types | Confidence |
+|--------|--------|---------------|------------|
+| Rule Engine | Regex + checksum | ID card, phone, case number, credit code, email, bank account | High (0.95) |
+| Keyword Matcher | Legal keywords + role patterns | Judge, assistant, clerk, parties, court name | Medium-High (0.85–0.9) |
+| NER Model | Transformers / ONNX | Person name, organization, address | Medium (model-dependent) |
+
+### Workflow
+
+1. **Upload** — drag-and-drop or file picker
+2. **Auto-detect** — system scans and annotates sensitive information
+3. **Review** — confirm, ignore, or modify each annotation via the web UI
+4. **Manual annotate** — select text in the document to add custom annotations
+5. **Export** — download the redacted DOCX/TXT, or view a side-by-side comparison with the original
+
+### Project Structure
+
+```
+legal-mask/
+├── legal_mask/
+│   ├── api/              # REST API (FastAPI)
+│   ├── detectors/        # Detection engines (rule, keyword, NER)
+│   ├── document_parsers/ # Document parsers (DOCX, PDF, XLSX, TXT)
+│   ├── engine/           # Annotation management, masking, export
+│   ├── frontend/         # Vue.js 3 frontend source
+│   ├── static/           # Built frontend assets
+│   ├── cli.py            # CLI entry point
+│   ├── server.py         # Server bootstrap
+│   ├── config.py         # Configuration
+│   └── types.py          # Type definitions
+├── examples/             # Sample documents
+├── tests/                # Test suite
+├── build.py              # Windows .exe build script
+└── pyproject.toml
+```
+
+### Configuration
+
+Config is stored in `~/.legal-mask/` and can be adjusted via the Settings page:
+
+- Listen address and port (default `127.0.0.1:8765`)
+- Upload size limit (default 50MB)
+- Enabled sensitive information types
+- Custom replacement rules
+
+### Build Windows Executable
+
+```bash
+python build.py
+# Output: dist/legal-mask.exe
+```
+
+### Development
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Run tests
+pytest tests/
+
+# Frontend dev (hot-reload)
+cd legal_mask/frontend && npm run dev
+
+# Build frontend
+cd legal_mask/frontend && npm run build
+```
+
+### Tech Stack
+
+**Backend:** Python, FastAPI, Uvicorn, Click  
+**Frontend:** Vue.js 3, TypeScript, Vite, Pinia, Vue Router  
+**Document Processing:** python-docx, PyMuPDF, openpyxl  
+**ML Inference:** ONNX Runtime, Transformers  
+**Packaging:** PyInstaller  
+
+### License
 
 MIT
