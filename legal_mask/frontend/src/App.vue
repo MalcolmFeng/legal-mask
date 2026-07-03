@@ -26,5 +26,5 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-
 .header nav { display: flex; gap: 16px; }
 .header nav a { color: #ccc; text-decoration: none; font-size: 14px; }
 .header nav a:hover { color: white; }
-main { padding: 24px; max-width: 1200px; margin: 0 auto; }
+main { padding: 24px; }
 </style>

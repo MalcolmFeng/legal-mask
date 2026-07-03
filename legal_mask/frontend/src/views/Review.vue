@@ -67,58 +67,64 @@ function renderHighlighted(text: string): string {
         <h4>原文</h4>
         <div class="text-content" v-html="renderHighlighted(store.currentDoc.content || '')"></div>
       </div>
-      <div class="annotations-pane" v-if="comparing">
-        <h4>脱敏预览</h4>
-        <pre class="comparison-text">{{ comparison }}</pre>
-      </div>
-    </div>
-
-    <div class="annotations-list" v-if="store.annotations.length">
-      <h4>标注列表</h4>
-      <div v-for="ann in store.annotations" :key="ann.id" class="annotation-item">
-        <span class="type-badge" :style="{ background: getColor(ann.sensitive_type) }">{{ getLabel(ann.sensitive_type) }}</span>
-        <span class="ann-text">「{{ ann.text }}」</span>
-        <span class="ann-source">({{ ann.source }}, {{ Math.round(ann.confidence * 100) }}%)</span>
-        <span class="ann-status" v-if="ann.status !== 'pending'">{{ ann.status }}</span>
-        <div class="ann-actions" v-if="ann.status === 'pending'">
-          <button class="btn-confirm" @click="handleStatus(ann, 'confirmed')">✓ 确认</button>
-          <button class="btn-ignore" @click="handleStatus(ann, 'ignored')">✗ 忽略</button>
+      <div class="right-pane">
+        <div class="annotations-list" v-if="store.annotations.length">
+          <h4>标注列表</h4>
+          <div class="ann-scroll">
+            <div v-for="ann in store.annotations" :key="ann.id" class="annotation-item">
+              <span class="type-badge" :style="{ background: getColor(ann.sensitive_type) }">{{ getLabel(ann.sensitive_type) }}</span>
+              <span class="ann-text">「{{ ann.text }}」</span>
+              <span class="ann-source">({{ ann.source }}, {{ Math.round(ann.confidence * 100) }}%)</span>
+              <span class="ann-status" v-if="ann.status !== 'pending'">{{ ann.status === 'confirmed' ? '已确认' : '已忽略' }}</span>
+              <div class="ann-actions" v-if="ann.status === 'pending'">
+                <button class="btn-confirm" @click="handleStatus(ann, 'confirmed')">✓</button>
+                <button class="btn-ignore" @click="handleStatus(ann, 'ignored')">✗</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="annotations-pane" v-if="comparing">
+          <h4>脱敏预览</h4>
+          <pre class="comparison-text">{{ comparison }}</pre>
+        </div>
+        <div class="review-actions">
+          <button class="btn-primary" @click="confirmAll" :disabled="pendingCount === 0">全部确认</button>
+          <button @click="handleCompare">{{ comparing ? '关闭预览' : '对比预览' }}</button>
+          <button class="btn-export" @click="handleExport">导出</button>
         </div>
       </div>
-    </div>
-
-    <div class="review-actions">
-      <button class="btn-primary" @click="confirmAll" :disabled="pendingCount === 0">全部确认 ({{ pendingCount }})</button>
-      <button @click="handleCompare">{{ comparing ? '关闭预览' : '对比预览' }}</button>
-      <button class="btn-export" @click="handleExport">导出脱敏文档</button>
     </div>
   </div>
 </template>
 
 <style scoped>
-.review-header { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
-.review-header h3 { flex: 1; }
-.progress { font-size: 14px; color: #666; background: #e8f5e9; padding: 4px 12px; border-radius: 12px; }
-.review-body { display: flex; gap: 16px; margin-bottom: 16px; }
-.original-pane, .annotations-pane { flex: 1; background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px; max-height: 500px; overflow-y: auto; }
-.original-pane h4, .annotations-pane h4 { margin-bottom: 8px; font-size: 14px; color: #666; }
-.text-content { line-height: 1.8; font-size: 14px; white-space: pre-wrap; word-break: break-all; }
-.comparison-text { font-size: 13px; line-height: 1.6; white-space: pre-wrap; }
-.annotations-list { background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px; margin-bottom: 16px; max-height: 300px; overflow-y: auto; }
-.annotations-list h4 { margin-bottom: 8px; font-size: 14px; color: #666; }
-.annotation-item { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid #f0f0f0; font-size: 14px; }
-.type-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; color: white; font-size: 12px; }
-.ann-text { font-weight: 500; }
-.ann-source { color: #999; font-size: 12px; }
-.ann-status { font-size: 12px; color: #2e7d32; }
-.ann-actions { margin-left: auto; display: flex; gap: 4px; }
-.btn-confirm, .btn-ignore { padding: 4px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; }
+.review-header { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; flex-shrink: 0; }
+.review-header h3 { flex: 1; font-size: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.progress { font-size: 13px; color: #666; background: #e8f5e9; padding: 4px 12px; border-radius: 12px; white-space: nowrap; }
+.review-body { display: flex; gap: 16px; height: calc(100vh - 160px); }
+.original-pane { flex: 1; background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px; display: flex; flex-direction: column; overflow: hidden; }
+.original-pane h4 { margin-bottom: 8px; font-size: 14px; color: #666; flex-shrink: 0; }
+.text-content { flex: 1; overflow-y: auto; line-height: 1.8; font-size: 14px; white-space: pre-wrap; word-break: break-all; }
+.right-pane { width: 360px; display: flex; flex-direction: column; gap: 12px; }
+.annotations-list { background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 12px; flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.annotations-list h4 { margin-bottom: 8px; font-size: 14px; color: #666; flex-shrink: 0; }
+.ann-scroll { flex: 1; overflow-y: auto; }
+.annotation-item { display: flex; align-items: center; gap: 6px; padding: 6px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
+.type-badge { display: inline-block; padding: 1px 6px; border-radius: 4px; color: white; font-size: 11px; white-space: nowrap; flex-shrink: 0; }
+.ann-text { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.ann-source { color: #999; font-size: 11px; white-space: nowrap; }
+.ann-status { font-size: 11px; color: #2e7d32; white-space: nowrap; }
+.ann-actions { margin-left: auto; display: flex; gap: 2px; flex-shrink: 0; }
+.btn-confirm, .btn-ignore { padding: 2px 8px; border: none; border-radius: 3px; cursor: pointer; font-size: 12px; }
 .btn-confirm { background: #4ECDC4; color: white; }
 .btn-ignore { background: #e0e0e0; color: #666; }
-.review-actions { display: flex; gap: 12px; margin-top: 16px; }
-.review-actions button { padding: 10px 24px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
+.review-actions { display: flex; gap: 8px; flex-wrap: wrap; flex-shrink: 0; }
+.review-actions button { padding: 8px 14px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; flex: 1; min-width: 0; }
 .btn-primary { background: #1a1a2e; color: white; }
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn-export { background: #4ECDC4; color: white; }
-.back-btn { background: none; border: none; cursor: pointer; font-size: 16px; color: #666; }
+.back-btn { background: none; border: none; cursor: pointer; font-size: 16px; color: #666; flex-shrink: 0; }
+.comparison-text { font-size: 13px; line-height: 1.6; white-space: pre-wrap; }
+.annotations-pane { background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 12px; flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.annotations-pane h4 { margin-bottom: 8px; font-size: 14px; color: #666; flex-shrink: 0; }
 </style>

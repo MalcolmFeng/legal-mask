@@ -5,6 +5,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pathlib import Path
 from legal_mask.api.router import router
 
@@ -23,7 +24,17 @@ def create_app() -> FastAPI:
 
     static_dir = Path(__file__).parent / "static"
     if static_dir.exists():
-        app.mount("/", StaticFiles(directory=str(static_dir), html=True), name="static")
+        app.mount("/assets", StaticFiles(directory=str(static_dir / "assets")), name="assets")
+        index_path = static_dir / "index.html"
+
+        @app.get("/{full_path:path}")
+        async def serve_spa(full_path: str):
+            if full_path.startswith("api/"):
+                from fastapi.responses import JSONResponse
+                return JSONResponse({"detail": "Not Found"}, status_code=404)
+            if index_path.exists():
+                return FileResponse(str(index_path))
+            return JSONResponse({"detail": "Not Found"}, status_code=404)
 
     return app
 
