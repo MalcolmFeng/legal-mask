@@ -6,3 +6,5 @@ dist/
 build/
 .venv/
 venv/
+node_modules/
+legal_mask/frontend/dist/
