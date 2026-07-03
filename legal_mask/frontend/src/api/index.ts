@@ -54,3 +54,11 @@ export async function exportDocument(docId: string): Promise<void> {
 export async function exportComparison(docId: string): Promise<{ comparison: string }> {
   return request(`/export/comparison/${docId}`, { method: 'POST' })
 }
+
+export async function getSettings(): Promise<{ enabled_types: string[]; mask_format: string }> {
+  return request('/settings')
+}
+
+export async function updateSettings(data: { enabled_types: string[]; mask_format: string }): Promise<{ enabled_types: string[]; mask_format: string }> {
+  return request('/settings', { method: 'PUT', body: JSON.stringify(data) })
+}

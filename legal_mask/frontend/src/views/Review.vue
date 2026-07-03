@@ -12,7 +12,6 @@ const store = useDocumentStore()
 const docId = route.params.id as string
 const comparing = ref(false)
 const comparison = ref('')
-const docIdRoute = docId
 
 const pendingCount = computed(() => store.annotations.filter(a => a.status === 'pending').length)
 
@@ -36,14 +35,20 @@ async function handleCompare() {
 
 function goBack() { router.push('/') }
 
+function escapeHtml(str: string): string {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;')
+}
+
 function renderHighlighted(text: string): string {
-  if (!store.annotations.length) return text
+  const safe = escapeHtml(text)
+  if (!store.annotations.length) return safe
   const sorted = [...store.annotations].filter(a => a.status !== 'ignored').sort((a, b) => b.start - a.start)
-  let result = text
+  let result = safe
   for (const ann of sorted) {
     const color = getColor(ann.sensitive_type)
     const label = getLabel(ann.sensitive_type)
-    result = result.slice(0, ann.start) + `<mark style="background:${color}22; border-bottom:2px solid ${color};padding:0 2px;" title="${label}">` + result.slice(ann.start, ann.end) + `</mark>` + result.slice(ann.end)
+    const annText = escapeHtml(result.slice(ann.start, ann.end))
+    result = result.slice(0, ann.start) + `<mark style="background:${color}22;border-bottom:2px solid ${color};padding:0 2px;" title="${escapeHtml(label)}">` + annText + `</mark>` + result.slice(ann.end)
   }
   return result
 }

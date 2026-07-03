@@ -3,10 +3,10 @@ from legal_mask.detectors.rule_engine import RuleEngine
 
 def test_detect_id_card():
     engine = RuleEngine()
-    results = engine.detect("身份证号110101199003151234。")
+    results = engine.detect("身份证号110101199003151233。")
     assert len(results) == 1
     assert results[0].sensitive_type.value == "id_card"
-    assert results[0].text == "110101199003151234"
+    assert results[0].text == "110101199003151233"
 
 
 def test_detect_phone():
@@ -39,7 +39,7 @@ def test_detect_email():
 
 def test_detect_multiple():
     engine = RuleEngine()
-    text = "张三身份证110101199003151234，电话13800138000"
+    text = "张三身份证110101199003151233，电话13800138000"
     results = engine.detect(text)
     assert len(results) == 2
 
@@ -55,3 +55,16 @@ def test_detect_bank_account():
     results = engine.detect("银行卡号6222021234567890123")
     assert len(results) == 1
     assert results[0].sensitive_type.value == "bank_account"
+
+
+def test_id_card_checksum():
+    engine = RuleEngine()
+    results = engine.detect("110101199003151233")
+    assert len(results) == 1
+    assert results[0].text == "110101199003151233"
+
+
+def test_invalid_id_card_checksum():
+    engine = RuleEngine()
+    results = engine.detect("110101199003151234")
+    assert len(results) == 0

@@ -39,7 +39,7 @@ SENSITIVE_TYPE_LABELS: dict[SensitiveType, str] = {
 
 SENSITIVE_TYPE_COLORS: dict[SensitiveType, str] = {
     SensitiveType.PERSON_NAME: "#FF6B6B",
-    SensitiveType.ID_CARD: "#4ECDC4",
+    SensitiveType.ID_CARD: "#3498DB",
     SensitiveType.PHONE: "#45B7D1",
     SensitiveType.CASE_NUMBER: "#96CEB4",
     SensitiveType.COURT_NAME: "#9B59B6",

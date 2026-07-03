@@ -1,4 +1,6 @@
 from __future__ import annotations
+import atexit
+import shutil
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -26,5 +28,18 @@ def create_app() -> FastAPI:
 
 
 def run_server(host: str = "127.0.0.1", port: int = 8765):
+    from legal_mask.config import Config
+
+    cfg = Config.default()
+    if cfg.cleanup_on_exit:
+        atexit.register(_cleanup_temp)
+
     app = create_app()
     uvicorn.run(app, host=host, port=port, log_level="info")
+
+
+def _cleanup_temp():
+    from legal_mask.config import Config
+    cfg = Config.default()
+    if cfg.temp_dir.exists():
+        shutil.rmtree(str(cfg.temp_dir), ignore_errors=True)

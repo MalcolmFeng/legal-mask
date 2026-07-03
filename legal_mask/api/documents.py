@@ -6,6 +6,7 @@ from legal_mask.config import Config
 from legal_mask.document_parsers import get_parser
 from legal_mask.detectors.rule_engine import RuleEngine
 from legal_mask.detectors.keyword_matcher import KeywordMatcher
+from legal_mask.detectors.ner_model import NerModel
 from legal_mask.engine.annotator import Annotator
 from legal_mask.types import AnnotationStatus
 
@@ -13,6 +14,7 @@ router = APIRouter()
 config = Config.default()
 rule_engine = RuleEngine()
 keyword_matcher = KeywordMatcher()
+ner_model = NerModel(config)
 annotator = Annotator()
 
 _documents: dict[str, dict] = {}
@@ -20,11 +22,18 @@ _documents: dict[str, dict] = {}
 
 @router.post("/upload")
 async def upload_document(file: UploadFile = File(...)):
+    max_bytes = config.max_upload_size_mb * 1024 * 1024
+    if file.size and file.size > max_bytes:
+        raise HTTPException(status_code=413, detail=f"File too large. Max: {config.max_upload_size_mb}MB")
+
     file_id = str(uuid.uuid4())
     temp_path = config.temp_dir / f"{file_id}_{file.filename}"
 
-    content = await file.read()
-    temp_path.write_bytes(content)
+    try:
+        content = await file.read()
+        temp_path.write_bytes(content)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to save file: {str(e)}")
 
     try:
         parser = get_parser(temp_path)
@@ -35,8 +44,9 @@ async def upload_document(file: UploadFile = File(...)):
 
     rule_results = rule_engine.detect(doc.content)
     keyword_results = keyword_matcher.detect(doc.content)
+    ner_results = ner_model.detect(doc.content)
 
-    all_annotations = rule_results + keyword_results
+    all_annotations = rule_results + keyword_results + ner_results
     for ann in all_annotations:
         ann.doc_id = file_id
 
