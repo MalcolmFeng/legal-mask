@@ -19,11 +19,12 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
+    app.include_router(router)
+
     static_dir = Path(__file__).parent / "static"
     if static_dir.exists():
         app.mount("/", StaticFiles(directory=str(static_dir), html=True), name="static")
 
-    app.include_router(router)
     return app
 
 
