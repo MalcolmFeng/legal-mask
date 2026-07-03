@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "legal-mask"
+version = "0.1.0"
+description = "法律文档脱敏系统 - 本地部署的半自动敏感信息脱敏工具"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.110.0",
+    "uvicorn>=0.29.0",
+    "click>=8.1.0",
+    "python-docx>=1.1.0",
+    "PyMuPDF>=1.24.0",
+    "openpyxl>=3.1.0",
+    "onnxruntime>=1.18.0",
+    "transformers>=4.40.0",
+    "tokenizers>=0.19.0",
+    "aiofiles>=24.1.0",
+    "python-multipart>=0.0.9",
+    "pydantic>=2.7.0",
+]
+[project.scripts]
+legal-mask = "legal_mask.cli:main"
