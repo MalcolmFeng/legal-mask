@@ -73,6 +73,8 @@ npm run dev
 4. **手动标注** — 可在文档中选中文本添加自定义标注
 5. **导出结果** — 导出脱敏后的 DOCX / TXT，或查看原文对比
 
+> 💡 仓库中提供了一个示例文档 `examples/测试文档-法律文书脱敏测试.docx`，包含常见敏感信息格式，可直接上传测试系统功能。
+
 ## 项目结构
 
 ```
@@ -88,6 +90,7 @@ legal-mask/
 │   ├── server.py         # 服务器启动
 │   ├── config.py         # 配置管理
 │   └── types.py          # 类型定义
+├── examples/             # 示例文档
 ├── tests/                # 测试
 ├── build.py              # Windows .exe 构建脚本
 └── pyproject.toml
