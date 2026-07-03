@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import re
 import uuid
-from typing import Any
 
 from legal_mask.types import Annotation, AnnotationStatus, SensitiveType
 
